@@ -1,43 +1,100 @@
 import React, { useState } from "react";
 
 function App() {
-  const [firstName, setFirstName] = useState("Carlo");
-  const [names, setNames] = useState([]);
+  const [article, setArticle] = useState({
+    title: "",
+    content: "",
+    image: "",
+    category: "news",
+    isPublished: false,
+  });
 
-  // Aggiunge un nome alla lista
-  const addName = (e) => {
+  const [articles, setArticles] = useState([]);
+
+  // Gestisce i cambiamenti del form
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setArticle({
+      ...article,
+      [name]: type === "checkbox" ? checked : value,
+    });
+  };
+
+  // Aggiunge un articolo alla lista
+  const addArticle = (e) => {
     e.preventDefault();
-    if (firstName.trim() !== "") {
-      setNames([...names, firstName]); // Aggiunge il nome alla lista
-      setFirstName(""); // Resetta l'input
+    if (article.title.trim() !== "" && article.content.trim() !== "") {
+      setArticles([...articles, article]); // Aggiunge l'articolo alla lista
+      setArticle({
+        title: "",
+        content: "",
+        image: "",
+        category: "news",
+        isPublished: false,
+      }); // Resetta il form
     }
   };
 
-  // Rimuove un nome dalla lista
-  const removeName = (indexToRemove) => {
-    setNames(names.filter((name,index) => index !== indexToRemove));
+  // Rimuove un articolo dalla lista
+  const removeArticle = (indexToRemove) => {
+    setArticles(articles.filter((_, index) => index !== indexToRemove));
   };
 
   return (
     <>
-      <form onSubmit={addName}>
+      <form onSubmit={addArticle}>
         <input
           type="text"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          placeholder="Inserisci un nome"
+          name="title"
+          value={article.title}
+          onChange={handleChange}
+          placeholder="Titolo"
         />
-        <button type="submit">Aggiungi Nome</button>
+        <textarea
+          name="content"
+          value={article.content}
+          onChange={handleChange}
+          placeholder="Contenuto"
+        />
+        <input
+          type="text"
+          name="image"
+          value={article.image}
+          onChange={handleChange}
+          placeholder="URL Immagine"
+        />
+        <select
+          name="category"
+          value={article.category}
+          onChange={handleChange}
+        >
+          <option value="news">News</option>
+          <option value="tech">Tech</option>
+          <option value="lifestyle">Lifestyle</option>
+        </select>
+        <label>
+          Pubblicare?
+          <input
+            type="checkbox"
+            name="isPublished"
+            checked={article.isPublished}
+            onChange={handleChange}
+          />
+        </label>
+        <button type="submit">Aggiungi Articolo</button>
       </form>
-      <p>Il tuo nome è {firstName}</p>
 
-      {/* Lista dei nomi */}
+      {/* Lista degli articoli */}
       <ul>
-        {names.map((name, index) => (
+        {articles.map((art, index) => (
           <li key={index}>
-            {name}{" "}
-            <button onClick={() => removeName(index)}>
-              <i className="fa-solid fa-trash"></i> {/* Icona Font Awesome */}
+            <h3>{art.title}</h3>
+            <p>{art.content}</p>
+            {art.image && <img src={art.image} alt={art.title} style={{ width: "100px" }} />}
+            <p>Categoria: {art.category}</p>
+            <p>Pubblicato: {art.isPublished ? "Sì" : "No"}</p>
+            <button onClick={() => removeArticle(index)}>
+              <i className="fa-solid fa-trash"></i> Rimuovi
             </button>
           </li>
         ))}
@@ -47,3 +104,4 @@ function App() {
 }
 
 export default App;
+
